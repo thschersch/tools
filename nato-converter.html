@@ -182,66 +182,66 @@
     <script>
         // German NATO Alphabet (DIN 5009)
         const germanNATO = {
-            'A': 'Anton',
-            'Ä': 'Ärger',
-            'B': 'Berta',
-            'C': 'Cäsar',
-            'D': 'Dora',
-            'E': 'Emil',
-            'F': 'Friedrich',
-            'G': 'Gustav',
-            'H': 'Heinrich',
-            'I': 'Ida',
-            'J': 'Julius',
-            'K': 'Kaufmann',
-            'L': 'Ludwig',
-            'M': 'Martha',
-            'N': 'Nordpol',
-            'O': 'Otto',
-            'Ö': 'Ökonom',
-            'P': 'Paula',
-            'Q': 'Quelle',
-            'R': 'Richard',
-            'S': 'Samuel',
+            'a': 'Anton',
+            'ä': 'Ärger',
+            'b': 'Berta',
+            'c': 'Cäsar',
+            'd': 'Dora',
+            'e': 'Emil',
+            'f': 'Friedrich',
+            'g': 'Gustav',
+            'h': 'Heinrich',
+            'i': 'Ida',
+            'j': 'Julius',
+            'k': 'Kaufmann',
+            'l': 'Ludwig',
+            'm': 'Martha',
+            'n': 'Nordpol',
+            'o': 'Otto',
+            'ö': 'Ökonom',
+            'p': 'Paula',
+            'q': 'Quelle',
+            'r': 'Richard',
+            's': 'Samuel',
             'ß': 'Eszett',
-            'T': 'Theodor',
-            'U': 'Ulrich',
-            'Ü': 'Übermut',
-            'V': 'Viktor',
-            'W': 'Wilhelm',
-            'X': 'Xanthippe',
-            'Y': 'Ypsilon',
-            'Z': 'Zacharias'
+            't': 'Theodor',
+            'u': 'Ulrich',
+            'ü': 'Übermut',
+            'v': 'Viktor',
+            'w': 'Wilhelm',
+            'x': 'Xanthippe',
+            'y': 'Ypsilon',
+            'z': 'Zacharias'
         };
 
         // English/International NATO Alphabet
         const englishNATO = {
-            'A': 'Alfa',
-            'B': 'Bravo',
-            'C': 'Charlie',
-            'D': 'Delta',
-            'E': 'Echo',
-            'F': 'Foxtrot',
-            'G': 'Golf',
-            'H': 'Hotel',
-            'I': 'India',
-            'J': 'Juliett',
-            'K': 'Kilo',
-            'L': 'Lima',
-            'M': 'Mike',
-            'N': 'November',
-            'O': 'Oscar',
-            'P': 'Papa',
-            'Q': 'Quebec',
-            'R': 'Romeo',
-            'S': 'Sierra',
-            'T': 'Tango',
-            'U': 'Uniform',
-            'V': 'Victor',
-            'W': 'Whiskey',
-            'X': 'X-ray',
-            'Y': 'Yankee',
-            'Z': 'Zulu'
+            'a': 'Alfa',
+            'b': 'Bravo',
+            'c': 'Charlie',
+            'd': 'Delta',
+            'e': 'Echo',
+            'f': 'Foxtrot',
+            'g': 'Golf',
+            'h': 'Hotel',
+            'i': 'India',
+            'j': 'Juliett',
+            'k': 'Kilo',
+            'l': 'Lima',
+            'm': 'Mike',
+            'n': 'November',
+            'o': 'Oscar',
+            'p': 'Papa',
+            'q': 'Quebec',
+            'r': 'Romeo',
+            's': 'Sierra',
+            't': 'Tango',
+            'u': 'Uniform',
+            'v': 'Victor',
+            'w': 'Whiskey',
+            'x': 'X-ray',
+            'y': 'Yankee',
+            'z': 'Zulu'
         };
 
         // UI text translations
@@ -314,10 +314,12 @@
                 return `<div class="empty-state">${currentTranslation.emptyState}</div>`;
             }
 
-            const letters = word.toUpperCase().split('');
+            const letters = word.split('');
             const natoWords = letters.map(letter => {
-                if (currentAlphabet[letter]) {
-                    return `<div class="letter-group"><span class="letter">${letter}</span> = <span class="word">${currentAlphabet[letter]}</span></div>`;
+                const lowerLetter = letter.toLowerCase();
+
+                if (currentAlphabet[lowerLetter]) {
+                    return `<div class="letter-group"><span class="letter">${lowerLetter.toLowerCase()}</span> = <span class="word">${currentAlphabet[lowerLetter]}</span></div>`;
                 } else if (letter === ' ') {
                     return `<div class="letter-group">⎵ = <span class="word">${currentTranslation.space}</span></div>`;
                 } else if (/[0-9]/.test(letter)) {
