@@ -314,22 +314,30 @@
                 return `<div class="empty-state">${currentTranslation.emptyState}</div>`;
             }
 
-            const letters = word.split('');
-            const natoWords = letters.map(letter => {
-                const lowerLetter = letter.toLowerCase();
+            // Split by spaces to handle each word separately
+            const words = word.split(' ');
+            const wordLines = words.map(w => {
+                if (!w) return ''; // Skip empty strings from multiple spaces
 
-                if (currentAlphabet[lowerLetter]) {
-                    return `<div class="letter-group"><span class="letter">${lowerLetter.toLowerCase()}</span> = <span class="word">${currentAlphabet[lowerLetter]}</span></div>`;
-                } else if (letter === ' ') {
-                    return `<div class="letter-group">⎵ = <span class="word">${currentTranslation.space}</span></div>`;
-                } else if (/[0-9]/.test(letter)) {
-                    return `<div class="letter-group"><span class="letter">${letter}</span> = <span class="word">${currentTranslation.numbers[letter]}</span></div>`;
-                } else {
-                    return `<div class="letter-group"><span class="letter">${letter}</span> = <span class="word" style="color: #999;">${currentTranslation.notInAlphabet}</span></div>`;
-                }
-            });
+                const letters = w.split('');
+                const phoneticWords = [];
 
-            return natoWords.join('');
+                letters.forEach(letter => {
+                    const lowerLetter = letter.toLowerCase();
+
+                    if (currentAlphabet[lowerLetter]) {
+                        phoneticWords.push(currentAlphabet[lowerLetter]);
+                    } else if (/[0-9]/.test(letter)) {
+                        phoneticWords.push(currentTranslation.numbers[letter]);
+                    } else {
+                        phoneticWords.push(`[${letter}]`);
+                    }
+                });
+
+                return phoneticWords.join(' ');
+            }).filter(line => line); // Remove empty lines
+
+            return `<div class="nato-result">${wordLines.join('<br>')}</div>`;
         }
 
         input.addEventListener('input', (e) => {

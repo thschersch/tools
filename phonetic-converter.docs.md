@@ -12,11 +12,11 @@
 - **Localized Interface**: All UI text switches based on the selected language for a native experience.
 - **Special Character Handling**: Gracefully handles spaces and unsupported characters with clear indicators.
 - **Clean, Modern UI**: Built with a premium gradient design, smooth transitions, and an intuitive toggle interface.
-- **Single File Portability**: The entire tool is contained within a single HTML file (`nato-converter.html`), making it easy to share and deploy.
+- **Single File Portability**: The entire tool is contained within a single HTML file (`phonetic-converter.html`), making it easy to share and deploy.
 
 ## Usage
 
-1. Open `nato-converter.html` in any modern web browser.
+1. Open `phonetic-converter.html` in any modern web browser.
 2. Select your preferred language using the 🇩🇪 Deutsch or 🇬🇧 English toggle buttons.
 3. Type any word, name, or text into the input field.
 4. The phonetic spelling will appear instantly below in an easy-to-read format.
