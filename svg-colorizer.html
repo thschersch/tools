@@ -352,6 +352,14 @@
                     </div>
 
                     <div class="actions">
+                        <button id="btn-reset" class="btn secondary" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12"></path>
+                                <path d="M3 3v9h9"></path>
+                            </svg>
+                            Start Over
+                        </button>
                         <button id="btn-download-svg" class="btn primary" disabled>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -414,6 +422,7 @@
 
             const btnDownloadSvg = document.getElementById('btn-download-svg');
             const btnDownloadPng = document.getElementById('btn-download-png');
+            const btnReset = document.getElementById('btn-reset');
 
             // State
             let currentSvgContent = null;
@@ -426,6 +435,7 @@
                 setupDragAndDrop();
                 setupColorPickers();
                 setupDownloads();
+                setupReset();
             }
 
             // Drag and Drop Logic
@@ -505,6 +515,7 @@
             function enableControls() {
                 btnDownloadSvg.disabled = false;
                 btnDownloadPng.disabled = false;
+                btnReset.disabled = false;
             }
 
             // Color Logic
@@ -558,6 +569,35 @@
                 if (stroke && stroke !== 'none' && stroke !== 'transparent' && stroke !== 'rgba(0, 0, 0, 0)') {
                     el.style.stroke = color;
                 }
+            }
+
+            // Reset Logic
+            function setupReset() {
+                btnReset.addEventListener('click', resetApp);
+            }
+
+            function resetApp() {
+                // Reset inputs to defaults
+                bgColorInput.value = '#ffffff';
+                fgColorInput.value = '#000000';
+                bgColorValue.textContent = '#FFFFFF';
+                fgColorValue.textContent = '#000000';
+
+                // Clear SVG state
+                currentSvgContent = null;
+                currentFileName = 'icon';
+                previewContainer.innerHTML = '';
+                previewContainer.classList.add('hidden');
+                dropZoneContent.style.opacity = '1';
+                dropZone.style.backgroundColor = ''; // Remove background color from dropzone
+
+                // Disable controls
+                btnDownloadSvg.disabled = true;
+                btnDownloadPng.disabled = true;
+                btnReset.disabled = true;
+
+                // Clear file input so same file can be selected again
+                fileInput.value = '';
             }
 
             // Export Logic
