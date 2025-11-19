@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube ID Extractor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.5;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #4a4a4a;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .result-display {
+            margin-bottom: 1rem;
+        }
+
+        .result-display-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #4a4a4a;
+        }
+
+        .result-display-value {
+            background-color: #f8f9fa;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .result-display-value.success {
+            background-color: #d1fae5;
+            border: 1px solid #10b981;
+        }
+
+        .result-display-value.error {
+            background-color: #fee2e2;
+            border: 1px solid #ef4444;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .copy-button {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .copy-button:active {
+            background-color: #1e40af;
+        }
+
+        .copy-button.copied {
+            background-color: #10b981;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            input {
+                font-size: 16px;
+                /* Prevents zoom on mobile */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>YouTube ID Extractor</h1>
+
+        <div class="input-group">
+            <label for="url">YouTube URL</label>
+            <input type="text" id="url" placeholder="Enter YouTube URL..." autocomplete="off">
+        </div>
+
+        <div class="result-display">
+            <div class="result-display-label">Extracted ID:</div>
+            <div id="result" class="result-display-value"></div>
+            <button id="copyButton" class="copy-button" style="display: none;">Copy ID</button>
+        </div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('url');
+        const resultDiv = document.getElementById('result');
+        const copyButton = document.getElementById('copyButton');
+
+        function extractYouTubeID(url) {
+            if (!url || !url.trim()) {
+                return null;
+            }
+
+            try {
+                // Handle various YouTube URL formats
+                const patterns = [
+                    // Standard watch URLs: https://www.youtube.com/watch?v=VIDEO_ID
+                    /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+                    // Short URLs: https://youtu.be/VIDEO_ID
+                    /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+                    // Embed URLs: https://www.youtube.com/embed/VIDEO_ID
+                    /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+                    // Mobile URLs: https://m.youtube.com/watch?v=VIDEO_ID
+                    /(?:m\.youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+                    // URLs with additional parameters
+                    /(?:youtube\.com\/.*[?&]v=)([a-zA-Z0-9_-]{11})/
+                ];
+
+                for (const pattern of patterns) {
+                    const match = url.match(pattern);
+                    if (match && match[1]) {
+                        return match[1];
+                    }
+                }
+
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function updateResult() {
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                resultDiv.textContent = '—';
+                resultDiv.className = 'result-display-value';
+                copyButton.style.display = 'none';
+                return;
+            }
+
+            const id = extractYouTubeID(url);
+
+            if (id) {
+                resultDiv.textContent = id;
+                resultDiv.className = 'result-display-value success';
+                copyButton.style.display = 'block';
+                copyButton.textContent = 'Copy ID';
+                copyButton.classList.remove('copied');
+            } else {
+                resultDiv.textContent = 'No YouTube ID found in URL';
+                resultDiv.className = 'result-display-value error';
+                copyButton.style.display = 'none';
+            }
+        }
+
+        function copyToClipboard() {
+            const id = extractYouTubeID(urlInput.value.trim());
+            if (id) {
+                navigator.clipboard.writeText(id).then(() => {
+                    copyButton.textContent = 'Copied!';
+                    copyButton.classList.add('copied');
+                    setTimeout(() => {
+                        copyButton.textContent = 'Copy ID';
+                        copyButton.classList.remove('copied');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                });
+            }
+        }
+
+        urlInput.addEventListener('input', updateResult);
+        copyButton.addEventListener('click', copyToClipboard);
+
+        // Initialize with example
+        urlInput.value = 'https://www.youtube.com/watch?v=fvzpByNmAik';
+        updateResult();
+    </script>
+</body>
+
+</html>
