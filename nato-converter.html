@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NATO Alphabet Converter</title>
+    <title>Phonetic Alphabet Converter</title>
     <style>
         * {
             margin: 0;
@@ -154,8 +154,8 @@
 
 <body>
     <div class="container">
-        <h1>NATO Alphabet Converter</h1>
-        <p class="subtitle" id="subtitle">Phonetic Alphabet Converter</p>
+        <h1>Phonetic Alphabet Converter</h1>
+        <p class="subtitle" id="subtitle">Buchstabieralphabet</p>
 
         <div class="language-toggle">
             <button id="btnGerman" class="active" onclick="setLanguage('german')">🇩🇪 Deutsch</button>
@@ -168,7 +168,7 @@
         </div>
 
         <div class="output">
-            <h2 id="outputHeading">NATO Buchstabierung:</h2>
+            <h2 id="outputHeading">Buchstabierung:</h2>
             <div id="result" class="empty-state">
                 Geben Sie ein Wort ein, um die NATO-Buchstabierung zu sehen.
             </div>
@@ -180,7 +180,7 @@
     </div>
 
     <script>
-        // German NATO Alphabet (DIN 5009)
+        // German Phonetic Alphabet (DIN 5009)
         const germanNATO = {
             'a': 'Anton',
             'ä': 'Ärger',
@@ -214,7 +214,7 @@
             'z': 'Zacharias'
         };
 
-        // English/International NATO Alphabet
+        // English/International Phonetic Alphabet
         const englishNATO = {
             'a': 'Alfa',
             'b': 'Bravo',
@@ -250,8 +250,8 @@
                 subtitle: 'Deutsches Buchstabieralphabet (DIN 5009)',
                 inputLabel: 'Geben Sie ein Wort ein:',
                 inputPlaceholder: 'z.B. Berlin, Schule, etc.',
-                outputHeading: 'NATO Buchstabierung:',
-                emptyState: 'Geben Sie ein Wort ein, um die NATO-Buchstabierung zu sehen.',
+                outputHeading: 'Buchstabierung:',
+                emptyState: 'Geben Sie ein Wort ein, um die Buchstabierung zu sehen.',
                 info: 'ℹ️ Das deutsche Buchstabieralphabet nach DIN 5009 wird verwendet, um Buchstaben eindeutig zu kommunizieren.',
                 space: 'Leerzeichen',
                 notInAlphabet: '(nicht im Alphabet)',
@@ -265,9 +265,9 @@
                 subtitle: 'International Phonetic Alphabet',
                 inputLabel: 'Enter a word:',
                 inputPlaceholder: 'e.g. London, School, etc.',
-                outputHeading: 'NATO Spelling:',
-                emptyState: 'Enter a word to see the NATO phonetic spelling.',
-                info: 'ℹ️ The NATO phonetic alphabet is used to clearly communicate letters and avoid misunderstandings.',
+                outputHeading: 'Phonetic Spelling:',
+                emptyState: 'Enter a word to see the phonetic spelling.',
+                info: 'ℹ️ The phonetic alphabet is used to clearly communicate letters and avoid misunderstandings.',
                 space: 'Space',
                 notInAlphabet: '(not in alphabet)',
                 numbers: {
