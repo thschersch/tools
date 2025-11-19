@@ -113,24 +113,24 @@
             margin-bottom: 15px;
         }
 
-        .nato-result {
+        .alphabet-result {
             font-size: 18px;
             color: #667eea;
             font-weight: 500;
             line-height: 1.6;
         }
 
-        .nato-result .letter-group {
+        .alphabet-result .letter-group {
             margin-bottom: 8px;
         }
 
-        .nato-result .letter {
+        .alphabet-result .letter {
             color: #333;
             font-weight: 700;
             margin-right: 5px;
         }
 
-        .nato-result .word {
+        .alphabet-result .word {
             color: #667eea;
         }
 
@@ -163,14 +163,14 @@
         </div>
 
         <div class="input-group">
-            <label for="wordInput" id="inputLabel">Geben Sie ein Wort ein:</label>
+            <label for="wordInput" id="inputLabel">Geben Sie den Text ein:</label>
             <input type="text" id="wordInput" placeholder="z.B. Berlin, Schule, etc." autocomplete="off">
         </div>
 
         <div class="output">
             <h2 id="outputHeading">Buchstabierung:</h2>
             <div id="result" class="empty-state">
-                Geben Sie ein Wort ein, um die NATO-Buchstabierung zu sehen.
+                Geben Sie den Text ein, um die Buchstabierung zu sehen.
             </div>
         </div>
 
@@ -181,7 +181,7 @@
 
     <script>
         // German Phonetic Alphabet (DIN 5009)
-        const germanNATO = {
+        const germanAlphabet = {
             'a': 'Anton',
             'ä': 'Ärger',
             'b': 'Berta',
@@ -215,7 +215,7 @@
         };
 
         // English/International Phonetic Alphabet
-        const englishNATO = {
+        const englishAlphabet = {
             'a': 'Alfa',
             'b': 'Bravo',
             'c': 'Charlie',
@@ -248,7 +248,7 @@
         const translations = {
             german: {
                 subtitle: 'Deutsches Buchstabieralphabet (DIN 5009)',
-                inputLabel: 'Geben Sie ein Wort ein:',
+                inputLabel: 'Geben Sie den Text ein:',
                 inputPlaceholder: 'z.B. Berlin, Schule, etc.',
                 outputHeading: 'Buchstabierung:',
                 emptyState: 'Geben Sie ein Wort ein, um die Buchstabierung zu sehen.',
@@ -263,10 +263,10 @@
             },
             english: {
                 subtitle: 'International Phonetic Alphabet',
-                inputLabel: 'Enter a word:',
+                inputLabel: 'Enter the text:',
                 inputPlaceholder: 'e.g. London, School, etc.',
                 outputHeading: 'Phonetic Spelling:',
-                emptyState: 'Enter a word to see the phonetic spelling.',
+                emptyState: 'Enter the text to see the phonetic spelling.',
                 info: 'ℹ️ The phonetic alphabet is used to clearly communicate letters and avoid misunderstandings.',
                 space: 'Space',
                 notInAlphabet: '(not in alphabet)',
@@ -279,7 +279,7 @@
         };
 
         let currentLanguage = 'german';
-        let currentAlphabet = germanNATO;
+        let currentAlphabet = germanAlphabet;
         let currentTranslation = translations.german;
 
         const input = document.getElementById('wordInput');
@@ -289,7 +289,7 @@
 
         function setLanguage(language) {
             currentLanguage = language;
-            currentAlphabet = language === 'german' ? germanNATO : englishNATO;
+            currentAlphabet = language === 'german' ? germanAlphabet : englishAlphabet;
             currentTranslation = translations[language];
 
             // Update button states
@@ -304,12 +304,12 @@
             document.getElementById('infoText').textContent = currentTranslation.info;
 
             // Update conversion with current input
-            const natoResult = convertToNATO(input.value);
-            result.innerHTML = natoResult;
-            result.className = input.value.trim() ? 'nato-result' : 'empty-state';
+            const alphabetResult = convertToAlphabet(input.value);
+            result.innerHTML = alphabetResult;
+            result.className = input.value.trim() ? 'alphabet-result' : 'empty-state';
         }
 
-        function convertToNATO(word) {
+        function convertToAlphabet(word) {
             if (!word || word.trim() === '') {
                 return `<div class="empty-state">${currentTranslation.emptyState}</div>`;
             }
@@ -337,13 +337,13 @@
                 return phoneticWords.join(' ');
             }).filter(line => line); // Remove empty lines
 
-            return `<div class="nato-result">${wordLines.join('<br>')}</div>`;
+            return `<div class="alphabet-result">${wordLines.join('<br>')}</div>`;
         }
 
         input.addEventListener('input', (e) => {
-            const natoResult = convertToNATO(e.target.value);
-            result.innerHTML = natoResult;
-            result.className = e.target.value.trim() ? 'nato-result' : 'empty-state';
+            const alphabetResult = convertToAlphabet(e.target.value);
+            result.innerHTML = alphabetResult;
+            result.className = e.target.value.trim() ? 'alphabet-result' : 'empty-state';
         });
 
         // Focus input on load
