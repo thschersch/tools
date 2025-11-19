@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NATO Alphabet Converter - German</title>
+    <title>NATO Alphabet Converter</title>
     <style>
         * {
             margin: 0;
@@ -42,8 +42,36 @@
         .subtitle {
             color: #666;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-size: 14px;
+        }
+
+        .language-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .language-toggle button {
+            padding: 10px 24px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .language-toggle button:hover {
+            background: #f0f0f0;
+        }
+
+        .language-toggle button.active {
+            background: #667eea;
+            color: white;
         }
 
         .input-group {
@@ -126,22 +154,27 @@
 
 <body>
     <div class="container">
-        <h1> Alphabet Converter</h1>
-        <p class="subtitle">Deutsches Buchstabieralphabet (DIN 5009)</p>
+        <h1>NATO Alphabet Converter</h1>
+        <p class="subtitle" id="subtitle">Phonetic Alphabet Converter</p>
+
+        <div class="language-toggle">
+            <button id="btnGerman" class="active" onclick="setLanguage('german')">🇩🇪 Deutsch</button>
+            <button id="btnEnglish" onclick="setLanguage('english')">🇬🇧 English</button>
+        </div>
 
         <div class="input-group">
-            <label for="wordInput">Geben Sie ein Wort ein:</label>
+            <label for="wordInput" id="inputLabel">Geben Sie ein Wort ein:</label>
             <input type="text" id="wordInput" placeholder="z.B. Berlin, Schule, etc." autocomplete="off">
         </div>
 
         <div class="output">
-            <h2>NATO Buchstabierung:</h2>
+            <h2 id="outputHeading">NATO Buchstabierung:</h2>
             <div id="result" class="empty-state">
                 Geben Sie ein Wort ein, um die NATO-Buchstabierung zu sehen.
             </div>
         </div>
 
-        <div class="info">
+        <div class="info" id="infoText">
             ℹ️ Das deutsche Buchstabieralphabet nach DIN 5009 wird verwendet, um Buchstaben eindeutig zu kommunizieren.
         </div>
     </div>
@@ -181,29 +214,116 @@
             'Z': 'Zacharias'
         };
 
+        // English/International NATO Alphabet
+        const englishNATO = {
+            'A': 'Alfa',
+            'B': 'Bravo',
+            'C': 'Charlie',
+            'D': 'Delta',
+            'E': 'Echo',
+            'F': 'Foxtrot',
+            'G': 'Golf',
+            'H': 'Hotel',
+            'I': 'India',
+            'J': 'Juliett',
+            'K': 'Kilo',
+            'L': 'Lima',
+            'M': 'Mike',
+            'N': 'November',
+            'O': 'Oscar',
+            'P': 'Papa',
+            'Q': 'Quebec',
+            'R': 'Romeo',
+            'S': 'Sierra',
+            'T': 'Tango',
+            'U': 'Uniform',
+            'V': 'Victor',
+            'W': 'Whiskey',
+            'X': 'X-ray',
+            'Y': 'Yankee',
+            'Z': 'Zulu'
+        };
+
+        // UI text translations
+        const translations = {
+            german: {
+                subtitle: 'Deutsches Buchstabieralphabet (DIN 5009)',
+                inputLabel: 'Geben Sie ein Wort ein:',
+                inputPlaceholder: 'z.B. Berlin, Schule, etc.',
+                outputHeading: 'NATO Buchstabierung:',
+                emptyState: 'Geben Sie ein Wort ein, um die NATO-Buchstabierung zu sehen.',
+                info: 'ℹ️ Das deutsche Buchstabieralphabet nach DIN 5009 wird verwendet, um Buchstaben eindeutig zu kommunizieren.',
+                space: 'Leerzeichen',
+                notInAlphabet: '(nicht im Alphabet)',
+                numbers: {
+                    '0': 'Null', '1': 'Eins', '2': 'Zwei',
+                    '3': 'Drei', '4': 'Vier', '5': 'Fünf',
+                    '6': 'Sechs', '7': 'Sieben', '8': 'Acht', '9': 'Neun'
+                }
+            },
+            english: {
+                subtitle: 'International Phonetic Alphabet',
+                inputLabel: 'Enter a word:',
+                inputPlaceholder: 'e.g. London, School, etc.',
+                outputHeading: 'NATO Spelling:',
+                emptyState: 'Enter a word to see the NATO phonetic spelling.',
+                info: 'ℹ️ The NATO phonetic alphabet is used to clearly communicate letters and avoid misunderstandings.',
+                space: 'Space',
+                notInAlphabet: '(not in alphabet)',
+                numbers: {
+                    '0': 'Zero', '1': 'One', '2': 'Two',
+                    '3': 'Three', '4': 'Four', '5': 'Five',
+                    '6': 'Six', '7': 'Seven', '8': 'Eight', '9': 'Nine'
+                }
+            }
+        };
+
+        let currentLanguage = 'german';
+        let currentAlphabet = germanNATO;
+        let currentTranslation = translations.german;
+
         const input = document.getElementById('wordInput');
         const result = document.getElementById('result');
+        const btnGerman = document.getElementById('btnGerman');
+        const btnEnglish = document.getElementById('btnEnglish');
+
+        function setLanguage(language) {
+            currentLanguage = language;
+            currentAlphabet = language === 'german' ? germanNATO : englishNATO;
+            currentTranslation = translations[language];
+
+            // Update button states
+            btnGerman.classList.toggle('active', language === 'german');
+            btnEnglish.classList.toggle('active', language === 'english');
+
+            // Update UI text
+            document.getElementById('subtitle').textContent = currentTranslation.subtitle;
+            document.getElementById('inputLabel').textContent = currentTranslation.inputLabel;
+            document.getElementById('wordInput').placeholder = currentTranslation.inputPlaceholder;
+            document.getElementById('outputHeading').textContent = currentTranslation.outputHeading;
+            document.getElementById('infoText').textContent = currentTranslation.info;
+
+            // Update conversion with current input
+            const natoResult = convertToNATO(input.value);
+            result.innerHTML = natoResult;
+            result.className = input.value.trim() ? 'nato-result' : 'empty-state';
+        }
 
         function convertToNATO(word) {
             if (!word || word.trim() === '') {
-                return '<div class="empty-state">Geben Sie ein Wort ein, um die NATO-Buchstabierung zu sehen.</div>';
+                return `<div class="empty-state">${currentTranslation.emptyState}</div>`;
             }
 
             const letters = word.toUpperCase().split('');
             const natoWords = letters.map(letter => {
-                if (germanNATO[letter]) {
-                    return `<div class="letter-group"><span class="letter">${letter}</span> = <span class="word">${germanNATO[letter]}</span></div>`;
+                if (currentAlphabet[letter]) {
+                    return `<div class="letter-group"><span class="letter">${letter}</span> = <span class="word">${currentAlphabet[letter]}</span></div>`;
                 } else if (letter === ' ') {
-                    return '<div class="letter-group">⎵ = <span class="word">Leerzeichen</span></div>';
+                    return `<div class="letter-group">⎵ = <span class="word">${currentTranslation.space}</span></div>`;
                 } else if (/[0-9]/.test(letter)) {
-                    const numberWords = {
-                        '0': 'Null', '1': 'Eins', '2': 'Zwei',
-                        '3': 'Drei', '4': 'Vier', '5': 'Fünf',
-                        '6': 'Sechs', '7': 'Sieben', '8': 'Acht', '9': 'Neun'
-                    };
-                    return `<div class="letter-group"><span class="letter">${letter}</span> = <span class="word">${numberWords[letter]}</span></div>`;
+                    return `<div class="letter-group"><span class="letter">${letter}</span> = <span class="word">${currentTranslation.numbers[letter]}</span></div>`;
                 } else {
-                    return `<div class="letter-group"><span class="letter">${letter}</span> = <span class="word" style="color: #999;">(nicht im Alphabet)</span></div>`;
+                    return `<div class="letter-group"><span class="letter">${letter}</span> = <span class="word" style="color: #999;">${currentTranslation.notInAlphabet}</span></div>`;
                 }
             });
 
