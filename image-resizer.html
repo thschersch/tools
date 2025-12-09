@@ -259,7 +259,7 @@
             <div class="upload-icon">📁</div>
             <div class="upload-text">Click to upload or drag & drop</div>
             <div class="upload-subtext">PNG or JPG files</div>
-            <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg,.png,.jpg,.jpeg">
+            <input type="file" id="fileInput" accept="image/png,image/jpeg">
         </div>
 
         <div class="info-box">
@@ -307,6 +307,11 @@
         let originalFileName = null;
         let pngDataUrl = null;
 
+        // Helper function to validate file type
+        function isValidImageFile(file) {
+            return file && (file.type === 'image/png' || file.type === 'image/jpeg');
+        }
+
         // Upload area click
         uploadArea.addEventListener('click', () => fileInput.click());
 
@@ -324,7 +329,7 @@
             e.preventDefault();
             uploadArea.classList.remove('dragover');
             const file = e.dataTransfer.files[0];
-            if (file && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+            if (isValidImageFile(file)) {
                 handleFile(file);
             } else {
                 showError('Please drop a valid PNG or JPG file');
@@ -335,13 +340,19 @@
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
-                handleFile(file);
+                if (isValidImageFile(file)) {
+                    handleFile(file);
+                } else {
+                    showError('Please select a valid PNG or JPG file');
+                }
             }
         });
 
         // Handle file upload
         function handleFile(file) {
-            originalFileName = file.name.replace(/\.(jpg|jpeg|png)$/i, '');
+            // Remove file extension more safely
+            const lastDotIndex = file.name.lastIndexOf('.');
+            originalFileName = lastDotIndex > 0 ? file.name.substring(0, lastDotIndex) : file.name;
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
@@ -382,6 +393,11 @@
                 // Create canvas
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
+
+                if (!ctx) {
+                    showError('Canvas 2D context is not supported in your browser');
+                    return;
+                }
 
                 // Set canvas to 1024x1024
                 canvas.width = 1024;
