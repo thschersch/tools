@@ -25,8 +25,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Need full history for git log in gather_links.py
+          fetch-depth: 0  # Need full history for git log in generate_tools_json.py
 
+      - name: Generate tools.json
+        run: python3 generate_tools_json.py
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
