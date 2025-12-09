@@ -229,7 +229,7 @@
             <div class="upload-icon">📁</div>
             <div class="upload-text">Click to upload or drag and drop</div>
             <div class="upload-hint">PNG or JPG files</div>
-            <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg">
+            <input type="file" id="fileInput" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
         </div>
 
         <div class="size-options" id="sizeOptions">
@@ -317,7 +317,7 @@
 
         // Handle file
         function handleFile(file) {
-            if (!file.type.match(/image\/(png|jpeg|jpg)/)) {
+            if (!file.type.match(/image\/(png|jpe?g)/)) {
                 showStatus('Please upload a PNG or JPG file', 'error');
                 return;
             }
