@@ -30,6 +30,9 @@ def extract_description_from_docs(docs_path):
     if not docs_path.exists():
         return None
     
+    # Minimum length for a substantial paragraph (to skip short fragments)
+    MIN_DESCRIPTION_LENGTH = 20
+    
     with open(docs_path, 'r', encoding='utf-8') as f:
         content = f.read()
         # Remove any HTML comments
@@ -38,7 +41,7 @@ def extract_description_from_docs(docs_path):
         lines = [line.strip() for line in content.split('\n') if line.strip()]
         # Skip lines that are just headers or empty
         for line in lines:
-            if not line.startswith('#') and len(line) > 20:
+            if not line.startswith('#') and len(line) > MIN_DESCRIPTION_LENGTH:
                 # Take first substantial paragraph
                 return line
     return None
@@ -52,7 +55,8 @@ def get_git_dates(file_path):
             ['git', 'log', '--follow', '--format=%aI', '--reverse', '--', file_path],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
+            timeout=10  # Prevent hanging on long-running git operations
         )
         dates = [line.strip() for line in result.stdout.strip().split('\n') if line.strip()]
         
@@ -60,7 +64,7 @@ def get_git_dates(file_path):
             created = dates[0]
             updated = dates[-1] if len(dates) > 1 else created
             return created, updated
-    except (subprocess.CalledProcessError, Exception):
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, Exception):
         pass
     
     return None, None
@@ -104,7 +108,8 @@ def generate_tools_json():
         tools.append(tool_data)
     
     # Sort by updated date (newest first), then by title
-    tools.sort(key=lambda x: (x.get('updated', ''), x.get('title', '')), reverse=True)
+    # Use a very old date as default for tools without dates to sort them to the end
+    tools.sort(key=lambda x: (x.get('updated', '1970-01-01'), x.get('title', '')), reverse=True)
     
     # Write to tools.json
     with open('tools.json', 'w', encoding='utf-8') as f:
