@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer - PNG/JPG to 1024x1024</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #f8f9ff;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #667eea;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .info-box {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            color: #555;
+            font-size: 0.9em;
+            padding-left: 20px;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+
+        .convert-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+
+        .convert-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .preview-area {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            min-height: 200px;
+            display: none;
+            background: #fafafa;
+        }
+
+        .preview-area.active {
+            display: block;
+        }
+
+        .preview-title {
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .preview-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .preview-box {
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+        }
+
+        .preview-label {
+            color: #666;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+
+        .image-info {
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .error {
+            background: #fee;
+            border: 2px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .preview-container {
+                flex-direction: column;
+            }
+
+            .preview-box {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🖼️ Image Resizer</h1>
+        <p class="subtitle">Resize PNG to 1024x1024 • Convert JPG to PNG 1024x1024</p>
+
+        <div class="error" id="error"></div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Click to upload or drag & drop</div>
+            <div class="upload-subtext">PNG or JPG files</div>
+            <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg,.png,.jpg,.jpeg">
+        </div>
+
+        <div class="info-box">
+            <h3>📋 How it works:</h3>
+            <ul>
+                <li><strong>PNG files:</strong> Resized to 1024x1024 pixels</li>
+                <li><strong>JPG files:</strong> Converted to PNG and resized to 1024x1024 pixels</li>
+                <li>All processing happens in your browser - no upload to servers</li>
+                <li>Output format is always PNG with transparent background support</li>
+            </ul>
+        </div>
+
+        <button class="convert-btn" id="convertBtn" disabled>Resize Image</button>
+
+        <div class="preview-area" id="previewArea">
+            <div class="preview-title">Preview & Download</div>
+            <div class="preview-container">
+                <div class="preview-box">
+                    <div class="preview-label">Original Image</div>
+                    <img id="originalPreview" class="preview-image" alt="Original Image">
+                    <div class="image-info" id="originalInfo"></div>
+                </div>
+                <div class="preview-box">
+                    <div class="preview-label">Resized Image (1024x1024 PNG)</div>
+                    <img id="resizedPreview" class="preview-image" alt="Resized Image">
+                    <div class="image-info">1024 × 1024 pixels</div>
+                </div>
+            </div>
+            <button class="download-btn" id="downloadBtn">⬇️ Download PNG (1024x1024)</button>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const convertBtn = document.getElementById('convertBtn');
+        const previewArea = document.getElementById('previewArea');
+        const originalPreview = document.getElementById('originalPreview');
+        const resizedPreview = document.getElementById('resizedPreview');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const errorDiv = document.getElementById('error');
+        const originalInfo = document.getElementById('originalInfo');
+
+        let currentImage = null;
+        let originalFileName = null;
+        let pngDataUrl = null;
+
+        // Upload area click
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+                handleFile(file);
+            } else {
+                showError('Please drop a valid PNG or JPG file');
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        // Handle file upload
+        function handleFile(file) {
+            originalFileName = file.name.replace(/\.(jpg|jpeg|png)$/i, '');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    currentImage = img;
+                    originalPreview.src = e.target.result;
+                    
+                    // Show original image info
+                    const fileType = file.type === 'image/png' ? 'PNG' : 'JPG';
+                    originalInfo.textContent = `${img.naturalWidth} × ${img.naturalHeight} pixels (${fileType})`;
+                    
+                    convertBtn.disabled = false;
+                    previewArea.classList.remove('active');
+                    hideError();
+                };
+                img.onerror = () => {
+                    showError('Failed to load image. Please try another file.');
+                };
+                img.src = e.target.result;
+            };
+            reader.onerror = () => {
+                showError('Failed to read file');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Convert button
+        convertBtn.addEventListener('click', resizeImage);
+
+        // Resize image to 1024x1024
+        function resizeImage() {
+            if (!currentImage) {
+                showError('Please upload an image first');
+                return;
+            }
+
+            try {
+                // Create canvas
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Set canvas to 1024x1024
+                canvas.width = 1024;
+                canvas.height = 1024;
+
+                // Calculate scaling to fit image within 1024x1024 while maintaining aspect ratio
+                const scale = Math.min(1024 / currentImage.naturalWidth, 1024 / currentImage.naturalHeight);
+                const scaledWidth = currentImage.naturalWidth * scale;
+                const scaledHeight = currentImage.naturalHeight * scale;
+
+                // Center the image on the canvas
+                const x = (1024 - scaledWidth) / 2;
+                const y = (1024 - scaledHeight) / 2;
+
+                // Clear canvas with transparent background
+                ctx.clearRect(0, 0, 1024, 1024);
+
+                // Draw image centered and scaled
+                ctx.drawImage(currentImage, x, y, scaledWidth, scaledHeight);
+
+                // Convert to PNG
+                pngDataUrl = canvas.toDataURL('image/png');
+
+                // Show preview
+                resizedPreview.src = pngDataUrl;
+                previewArea.classList.add('active');
+
+                hideError();
+            } catch (error) {
+                showError('Error resizing image: ' + error.message);
+            }
+        }
+
+        // Download button
+        downloadBtn.addEventListener('click', () => {
+            if (!pngDataUrl) return;
+
+            const link = document.createElement('a');
+            const fileName = originalFileName || 'resized-image';
+            link.download = `${fileName}-1024x1024.png`;
+            link.href = pngDataUrl;
+            link.click();
+        });
+
+        // Error handling
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.classList.add('active');
+        }
+
+        function hideError() {
+            errorDiv.classList.remove('active');
+        }
+    </script>
+</body>
+
+</html>
