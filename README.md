@@ -11,6 +11,7 @@ A collection of useful browser-based tools for everyday tasks. All tools run ent
 - [**SVG Colorizer**](svg-colorizer.html) - Customize colors of SVG icons with real-time preview and export as SVG or PNG
 - [**SVG to PNG Converter**](svg-to-png.html) - Convert SVG vector images into high-quality PNG raster images with precise dimension control
 - [**SVG to ICO Converter**](svg-to-ico.html) - Generate multi-size Windows ICO files from SVG sources
+- [**PNG/JPG to ICO Converter**](png-to-ico.html) - Convert PNG or JPG images to multi-size ICO format for favicons and Windows icons
 - [**Image Resizer**](image-resizer.html) - Resize PNG images or convert JPG to PNG at 1024x1024 dimensions
 
 ### Text & Data Tools

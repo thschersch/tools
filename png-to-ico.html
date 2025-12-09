@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNG/JPG to ICO Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #667eea;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            color: #999;
+            font-size: 14px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .size-options {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .size-options.active {
+            display: block;
+        }
+
+        .size-options h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .size-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+        }
+
+        .size-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .size-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .size-option label {
+            cursor: pointer;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .preview-area {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .preview-area.active {
+            display: block;
+        }
+
+        .preview-area h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .convert-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .convert-btn.active {
+            display: block;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+
+        .convert-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status.active {
+            display: block;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PNG/JPG to ICO Converter</h1>
+        <p class="subtitle">Convert your PNG or JPG files to ICO format with multiple sizes</p>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Click to upload or drag and drop</div>
+            <div class="upload-hint">PNG or JPG files</div>
+            <input type="file" id="fileInput" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+        </div>
+
+        <div class="size-options" id="sizeOptions">
+            <h3>Select ICO sizes to include:</h3>
+            <div class="size-grid">
+                <div class="size-option">
+                    <input type="checkbox" id="size16" value="16" checked>
+                    <label for="size16">16x16</label>
+                </div>
+                <div class="size-option">
+                    <input type="checkbox" id="size32" value="32" checked>
+                    <label for="size32">32x32</label>
+                </div>
+                <div class="size-option">
+                    <input type="checkbox" id="size48" value="48" checked>
+                    <label for="size48">48x48</label>
+                </div>
+                <div class="size-option">
+                    <input type="checkbox" id="size64" value="64">
+                    <label for="size64">64x64</label>
+                </div>
+                <div class="size-option">
+                    <input type="checkbox" id="size128" value="128">
+                    <label for="size128">128x128</label>
+                </div>
+                <div class="size-option">
+                    <input type="checkbox" id="size256" value="256">
+                    <label for="size256">256x256</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-area" id="previewArea">
+            <h3>Preview</h3>
+            <img class="preview-image" id="previewImage" alt="Image Preview">
+        </div>
+
+        <button class="convert-btn" id="convertBtn">Convert to ICO</button>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const sizeOptions = document.getElementById('sizeOptions');
+        const previewArea = document.getElementById('previewArea');
+        const previewImage = document.getElementById('previewImage');
+        const convertBtn = document.getElementById('convertBtn');
+        const status = document.getElementById('status');
+
+        let imageFile = null;
+        let imageData = null;
+
+        // Upload area click
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Handle file
+        function handleFile(file) {
+            if (!file.type.match(/image\/(png|jpe?g)/)) {
+                showStatus('Please upload a PNG or JPG file', 'error');
+                return;
+            }
+
+            imageFile = file;
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                imageData = e.target.result;
+                previewImage.src = imageData;
+                sizeOptions.classList.add('active');
+                previewArea.classList.add('active');
+                convertBtn.classList.add('active');
+                showStatus('Image loaded successfully! Select sizes and click convert.', 'success');
+            };
+
+            reader.onerror = () => {
+                showStatus('Error reading file', 'error');
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // Convert button
+        convertBtn.addEventListener('click', async () => {
+            const selectedSizes = Array.from(document.querySelectorAll('.size-option input:checked'))
+                .map(cb => parseInt(cb.value));
+
+            if (selectedSizes.length === 0) {
+                showStatus('Please select at least one size', 'error');
+                return;
+            }
+
+            convertBtn.disabled = true;
+            showStatus('Converting...', 'info');
+
+            try {
+                const icoBlob = await convertImageToIco(imageData, selectedSizes);
+                downloadFile(icoBlob, imageFile.name.replace(/\.(png|jpg|jpeg)$/i, '.ico'));
+                showStatus('Conversion successful! Download started.', 'success');
+            } catch (error) {
+                showStatus('Conversion failed: ' + error.message, 'error');
+            } finally {
+                convertBtn.disabled = false;
+            }
+        });
+
+        // Convert Image to ICO
+        async function convertImageToIco(imageDataUrl, sizes) {
+            const images = await Promise.all(sizes.map(size => resizeImageToPng(imageDataUrl, size)));
+            return createIco(images, sizes);
+        }
+
+        // Resize image to PNG
+        function resizeImageToPng(imageDataUrl, size) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = size;
+                canvas.height = size;
+
+                img.onload = () => {
+                    // Calculate scaling to fit image within size while maintaining aspect ratio
+                    const scale = Math.min(size / img.width, size / img.height);
+                    const scaledWidth = img.width * scale;
+                    const scaledHeight = img.height * scale;
+                    
+                    // Center the image on the canvas
+                    const x = (size - scaledWidth) / 2;
+                    const y = (size - scaledHeight) / 2;
+                    
+                    // Clear canvas with transparent background
+                    ctx.clearRect(0, 0, size, size);
+                    
+                    // Draw image centered and scaled
+                    ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+                    
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                resolve(new Uint8Array(e.target.result));
+                            };
+                            reader.readAsArrayBuffer(blob);
+                        } else {
+                            reject(new Error('Failed to create blob'));
+                        }
+                    }, 'image/png');
+                };
+
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = imageDataUrl;
+            });
+        }
+
+        // Create ICO file
+        function createIco(images, sizes) {
+            // ICO header
+            const header = new Uint8Array(6);
+            const view = new DataView(header.buffer);
+            view.setUint16(0, 0, true); // Reserved
+            view.setUint16(2, 1, true); // Type (1 = ICO)
+            view.setUint16(4, images.length, true); // Number of images
+
+            // Calculate directory entries and data
+            let offset = 6 + (images.length * 16); // Header + directory entries
+            const entries = [];
+            const data = [];
+
+            images.forEach((imageData, i) => {
+                const size = sizes[i];
+                const entry = new Uint8Array(16);
+                const entryView = new DataView(entry.buffer);
+
+                entryView.setUint8(0, size === 256 ? 0 : size); // Width (0 = 256)
+                entryView.setUint8(1, size === 256 ? 0 : size); // Height (0 = 256)
+                entryView.setUint8(2, 0); // Color palette
+                entryView.setUint8(3, 0); // Reserved
+                entryView.setUint16(4, 1, true); // Color planes
+                entryView.setUint16(6, 32, true); // Bits per pixel
+                entryView.setUint32(8, imageData.length, true); // Size of image data
+                entryView.setUint32(12, offset, true); // Offset to image data
+
+                entries.push(entry);
+                data.push(imageData);
+                offset += imageData.length;
+            });
+
+            // Combine all parts
+            const totalLength = header.length + entries.reduce((sum, e) => sum + e.length, 0) + 
+                              data.reduce((sum, d) => sum + d.length, 0);
+            const result = new Uint8Array(totalLength);
+
+            let position = 0;
+            result.set(header, position);
+            position += header.length;
+
+            entries.forEach(entry => {
+                result.set(entry, position);
+                position += entry.length;
+            });
+
+            data.forEach(imageData => {
+                result.set(imageData, position);
+                position += imageData.length;
+            });
+
+            return new Blob([result], { type: 'image/x-icon' });
+        }
+
+        // Download file
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Show status
+        function showStatus(message, type) {
+            status.textContent = message;
+            status.className = 'status active ' + type;
+        }
+    </script>
+</body>
+</html>
